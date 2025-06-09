@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Kétura, com Amor</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for elegant typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Apply custom fonts */
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            /* Set the background image */
+            background-image: url('https://i.ibb.co/N6CCwTvq/Whats-App-Image-2025-06-09-at-19-48-38.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+            overflow-y: auto;   /* Allow vertical scrollbar */
+        }
+        .font-serif-display {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Add a dark overlay to the body to improve text readability */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(49, 10, 21, 0.2); /* A dark rose overlay */
+            z-index: 0; 
+        }
+        /* Wraps the main content card */
+        .content-wrapper {
+            position: relative;
+            z-index: 2; /* Content on top of hearts */
+        }
+        /* Container for the falling hearts */
+        #hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicking through the hearts */
+            z-index: 1; /* Hearts are between overlay and content */
+            overflow: hidden;
+        }
+        /* Individual heart style */
+        .heart {
+            position: absolute;
+            top: -40px; /* Start hearts off-screen */
+            color: #ff8fab; /* Light pink color */
+            font-size: 20px;
+            user-select: none;
+            /* Animation properties will be set by JavaScript */
+            animation: fall linear infinite;
+        }
+
+        /* The falling animation */
+        @keyframes fall {
+            0% {
+                transform: translateY(0vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(120vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-rose-50">
+
+    <!-- Container for the falling hearts effect -->
+    <div id="hearts-container"></div>
+
+    <div class="min-h-screen flex flex-col items-center justify-center p-4 content-wrapper">
+        
+        <!-- Main Content Card -->
+        <div class="w-full max-w-sm bg-white/50 backdrop-blur-sm rounded-3xl shadow-2xl p-6 text-center space-y-6 my-8">
+
+            <!-- Love Message -->
+            <div>
+                <h1 class="font-serif-display text-3xl text-rose-800 mb-3">Para minha amada Kétura</h1>
+                <p class="text-black text-lg leading-relaxed italic">
+                    "Você deu sentido a tudo na minha vida e me mostrou que eu posso ser feliz até mesmo nas horas mais difíceis, só pelo fato de ter você comigo. 
+                    <br><strong class="text-rose-900">Te amo infinitamente!</strong>"
+                </p>
+            </div>
+            
+            <hr class="border-rose-200">
+
+            <!-- Countdown Timer -->
+            <div class="space-y-3">
+                <p class="text-black">Só acreditei em amor à primeira vista há exatamente:</p>
+                <div class="flex flex-wrap justify-center items-end gap-x-2 gap-y-2 text-rose-900">
+                    <div class="text-center"><span id="years" class="text-3xl font-bold">0</span><span class="block text-xs text-black">anos</span></div>
+                    <div class="text-center"><span id="months" class="text-3xl font-bold">0</span><span class="block text-xs text-black">meses</span></div>
+                    <div class="text-center"><span id="days" class="text-3xl font-bold">0</span><span class="block text-xs text-black">dias</span></div>
+                    <div class="text-center"><span id="hours" class="text-3xl font-bold">0</span><span class="block text-xs text-black">horas</span></div>
+                    <div class="text-center"><span id="minutes" class="text-2xl font-bold">0</span><span class="block text-xs text-black">min</span></div>
+                    <div class="text-center"><span id="seconds" class="text-xl font-bold">0</span><span class="block text-xs text-black">seg</span></div>
+                </div>
+                <p class="text-black">...atrás.</p>
+            </div>
+
+            <hr class="border-rose-200">
+            
+            <!-- Gemini Poem Generator -->
+            <div class="space-y-4">
+                 <h2 class="font-serif-display text-xl text-rose-800">Um Poema para Você</h2>
+                 <div id="poem-output" class="text-black italic min-h-[120px] bg-rose-50/60 p-4 rounded-lg flex items-center justify-center transition-all duration-300">
+                     Clique no botão para gerar um poema!
+                 </div>
+                 <button id="poem-button" class="bg-rose-600 text-white font-bold py-3 px-6 rounded-full hover:bg-rose-700 active:scale-95 transition-all duration-150 disabled:bg-rose-300 shadow-lg">
+                     Gerar novo poema
+                 </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- Falling Hearts Logic ---
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartsCount = 30; // Number of hearts on screen
+            for (let i = 0; i < heartsCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '&#10084;'; // Heart character
+                
+                // Randomize properties for a natural look
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 8 + 7) + 's'; // Slow fall (7s to 15s)
+                heart.style.animationDelay = Math.random() * 10 + 's'; // Staggered start
+                heart.style.opacity = Math.random() * 0.4 + 0.2; // Opacity between 0.2 and 0.6
+                heart.style.fontSize = (Math.random() * 15 + 10) + 'px'; // Size between 10px and 25px
+                
+                container.appendChild(heart);
+            }
+        }
+        
+        // --- Countdown Timer Logic ---
+        const startDate = new Date('2023-03-10T23:38:00');
+        const yearsEl = document.getElementById('years');
+        const monthsEl = document.getElementById('months');
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+
+        function updateCountdown() {
+            const now = new Date();
+            let years = now.getFullYear() - startDate.getFullYear();
+            let months = now.getMonth() - startDate.getMonth();
+            let days = now.getDate() - startDate.getDate();
+            let hours = now.getHours() - startDate.getHours();
+            let minutes = now.getMinutes() - startDate.getMinutes();
+            let seconds = now.getSeconds() - startDate.getSeconds();
+
+            if (seconds < 0) { minutes--; seconds += 60; }
+            if (minutes < 0) { hours--; minutes += 60; }
+            if (hours < 0) { days--; hours += 24; }
+            if (days < 0) {
+                months--;
+                const lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += lastMonth.getDate();
+            }
+            if (months < 0) { years--; months += 12; }
+
+            yearsEl.innerText = years;
+            monthsEl.innerText = months;
+            daysEl.innerText = days;
+            hoursEl.innerText = hours;
+            minutesEl.innerText = minutes;
+            secondsEl.innerText = seconds;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        
+        // --- Gemini API Poem Generator Logic ---
+        const poemButton = document.getElementById('poem-button');
+        const poemOutput = document.getElementById('poem-output');
+
+        poemButton.addEventListener('click', generatePoem);
+
+        async function generatePoem() {
+            poemButton.disabled = true;
+            poemButton.innerText = 'Gerando...';
+            poemOutput.innerHTML = '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-600"></div>';
+            
+            const prompt = "Escreva um poema de amor curto, com duas estrofes, para minha esposa Ketura. Fale sobre como o olhar dela mudou sua vida. Use um tom romântico e apaixonado.";
+            const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts.length > 0) {
+                    const poemText = result.candidates[0].content.parts[0].text;
+                    poemOutput.innerHTML = poemText.replace(/\n/g, '<br>');
+                } else {
+                    poemOutput.innerText = 'Não foi possível gerar o poema. Tente novamente.';
+                }
+            } catch (error) {
+                console.error("Error generating poem:", error);
+                poemOutput.innerText = 'Ocorreu um erro. Por favor, tente novamente mais tarde.';
+            } finally {
+                poemButton.disabled = false;
+                poemButton.innerText = 'Gerar novo poema';
+            }
+        }
+        
+        // Run functions on page load
+        window.onload = function() {
+            createHearts();
+        };
+    </script>
+</body>
+</html>
